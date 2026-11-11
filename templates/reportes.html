@@ -1,0 +1,30 @@
+{% extends "base.html" %}{% import "_macros.html" as m %}
+{% block title %}Reportes{% endblock %}
+{% block content %}
+{% call m.cabecera("Reportes", "Reporte del equipo · validación de los modelos") %}
+<div class="header-controls"><button type="button" class="btn btn-primary" data-action="print">{{ icon('download', 16) }}<span>Exportar PDF</span></button></div>
+{% endcall %}
+<section class="card">
+  <div class="chart-title-row">{{ m.titulo("Error medio por mes", "Unidades por producto y semana · menor es mejor") }}
+    <div class="legend">{% for k, n, b, d in series %}<span><i class="{{ d }}"></i>{{ n }}</span>{% endfor %}</div></div>
+  <div class="bar-chart">
+    {% for r in validacion %}<div class="bar-group"><div class="bars">
+      {% for k, n, b, d in series %}<div class="bar {{ b }}" style="height:{{ [(r[k] / tope * 100)|round|int, 4]|max }}%"><span class="chart-tooltip">{{ r[k] }}</span></div>{% endfor %}
+    </div><span>{{ r.mes }}</span></div>
+    {% else %}<p class="note">Sin validación guardada todavía.</p>{% endfor %}
+  </div>
+</section>
+{% if modelos %}
+<div class="metric-grid three">
+  {{ m.metrica("Error del promedio simple", "%.1f"|format(modelos.medias.linea_base), "Línea base: últimas 4 semanas") }}
+  {{ m.metrica("Error del mejor modelo", "%.1f"|format(modelos.error_mejor), modelos.mejor) }}
+  {{ m.metrica("Mejora vs. promedio simple", "%.0f%%"|format(modelos.mejora), "Positivo = el modelo aporta") }}
+</div>
+{% endif %}
+<section class="card">{{ m.titulo("Detalle de la validación") }}
+  <div class="table-wrap"><table>
+    <thead><tr><th>Mes</th><th>Semanas de historia</th><th>Promedio simple</th><th>Random Forest</th><th>Gradient Boosting</th></tr></thead>
+    <tbody>{% for r in validacion %}<tr><td>{{ r.mes }}</td><td>{{ r.semanas_de_historia }}</td><td>{{ r.linea_base }}</td><td>{{ r.random_forest }}</td><td>{{ r.gradient_boosting }}</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+{% endblock %}

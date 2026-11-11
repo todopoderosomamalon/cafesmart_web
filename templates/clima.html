@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% import "_macros.html" as m %}
+{% block title %}Alertas de clima{% endblock %}
+{% block content %}
+{% call m.cabecera("Alertas de clima", "El clima esperado de cada mes guía qué combos se sugieren") %}{% endcall %}
+<div class="alert alert-warning"><div class="alert-icon">{{ icon('cloud') }}</div>
+  <div><b>Alertas en vivo: pendiente de conectar</b><span>Esta pantalla muestra el clima típico que usa el modelo. Para avisar cuando el pronóstico cambie y aprobar ajustes hace falta una fuente de clima en vivo y una tabla de alertas en Supabase.</span></div></div>
+<div class="metric-grid three">
+  {{ m.metrica("Meses calurosos", conteo.get('caluroso', 0), "Promedio de 29 °C o más") }}
+  {{ m.metrica("Meses cálidos", conteo.get('cálido', 0), "Entre 26 y 29 °C") }}
+  {{ m.metrica("Meses frescos", conteo.get('fresco', 0), "Menos de 26 °C") }}
+</div>
+<section class="card">{{ m.titulo("Clima esperado por mes", "Según el clima típico de los años anteriores") }}
+  <div class="table-wrap"><table>
+    <thead><tr><th>Mes</th><th>Clima esperado</th><th>Combos sugeridos</th></tr></thead>
+    <tbody>{% for x in meses %}<tr><td>{{ x.periodo }}</td><td>{{ m.insignia(x.clima) }}</td><td>{{ x.combos|join(' · ') }}</td></tr>
+    {% else %}<tr><td colspan="3">Sin menú mensual guardado.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+{% endblock %}

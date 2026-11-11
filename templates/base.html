@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}CaféSmart{% endblock %} | Panel de predicción</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  </head>
+  <body>
+    {% set marca %}<div class="brand"><div class="brand-mark"><span></span><span></span><span></span></div><strong>CaféSmart</strong></div>{% endset %}
+    <div class="app-shell">
+      <header class="mobile-header">
+        <button class="mobile-menu-button" data-action="toggleMenu" aria-label="Menú">{{ icon('hamburger') }}</button>{{ marca }}
+      </header>
+      <aside class="sidebar">
+        {{ marca }}
+        <nav><span class="nav-label">Navegación</span>
+          {% for ep, nombre, ic in PAGINAS %}
+          <a class="{{ 'active' if request.endpoint == ep }}" href="{{ url_for(ep) }}">{{ icon(ic) }}<span>{{ nombre }}</span>{% if request.endpoint == ep %}<i></i>{% endif %}</a>
+          {% endfor %}
+        </nav>
+        <a class="refresh" href="{{ url_for('actualizar') }}" title="Volver a leer los datos de Supabase">↻ Actualizar datos</a>
+        <div class="sidebar-footer"><div class="avatar">CS</div><div><b>CaféSmart</b><span>Administrador</span></div></div>
+      </aside>
+      <main><div class="content">{% block content %}{% endblock %}</div></main>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>
