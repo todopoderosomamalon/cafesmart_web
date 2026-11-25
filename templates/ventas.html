@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% import "_macros.html" as m %}
+{% block title %}Ventas{% endblock %}
+{% block content %}
+{% call m.cabecera("Predicción de ventas") %}<div class="header-controls">{{ m.pastillas(tipo, 'ventas') }}</div>{% endcall %}
+<section class="card">{{ m.titulo("Ventas previstas por " ~ TIPOS[tipo]|lower, "Unidades · haz clic en una barra") }}{{ m.barras(barras, actual.key) }}</section>
+<div class="two-columns uneven">
+  <section class="card">{{ m.titulo("Por categoría", actual.largo) }}
+    <div class="horizontal-bars">{% for nombre, pct in categorias %}<div class="horizontal-row"><span>{{ nombre }}</span><div><i style="width:{{ pct }}%"></i></div><b>{{ pct }}%</b></div>{% endfor %}</div>
+  </section>
+  <section class="card">{{ m.titulo("Momentos más fuertes") }}
+    <div class="peak"><span>Semana con más ventas previstas</span><strong>{{ mejor_semana[0] }}</strong>
+      <div><span>{{ mejor_semana[1]|num }} unidades</span></div></div>
+    {% if mejor_mes %}<div class="peak" style="margin-top:14px"><span>Mes con más ventas previstas</span><strong>{{ mejor_mes[0] }}</strong>
+      <div><span>{{ mejor_mes[1]|num }} unidades</span></div></div>{% endif %}
+  </section>
+</div>
+<section class="card">{{ m.titulo("Productos previstos", actual.largo ~ " · clic en una columna para ordenar") }}{{ m.tabla_productos(prods) }}</section>
+{% endblock %}

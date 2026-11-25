@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Aviso{% endblock %}
+{% block content %}
+<header class="page-header"><div><div class="eyebrow">Aviso</div><h1>{{ titulo }}</h1></div></header>
+<section class="card error-box">
+  <p style="margin:0 0 14px"><code>{{ detalle }}</code></p>
+  <ul>
+    <li>Revisa que exista el archivo <code>.env</code> con <code>SUPABASE_URL</code> y <code>SUPABASE_KEY</code>.</li>
+    <li>La URL debe ser solo <code>https://xxxx.supabase.co</code>, sin <code>/rest/v1</code>.</li>
+    <li>Las 10 tablas deben existir y tener datos (celda de subida del notebook).</li>
+    <li>Después de corregir, recarga la página.</li>
+  </ul>
+</section>
+{% endblock %}

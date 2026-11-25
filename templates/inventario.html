@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% import "_macros.html" as m %}
+{% block title %}Inventario{% endblock %}
+{% block content %}
+{% call m.cabecera("Inventario (apoyo)") %}
+<form class="header-controls" method="get">
+  <input type="hidden" name="tab" value="{{ tab }}">
+  <div class="select-shell"><span>Estación</span><select name="estacion" onchange="this.form.submit()">{% for e in estaciones %}<option {{ 'selected' if e == estacion }}>{{ e }}</option>{% endfor %}</select></div>
+</form>
+{% endcall %}
+<div class="inventory-toolbar">
+  <div class="pills">
+    <a class="{{ 'active' if tab == 'pedido' }}" href="{{ url_for('inventario', tab='pedido', estacion=estacion) }}">Pedido de la estación</a>
+    <a class="{{ 'active' if tab == 'revision' }}" href="{{ url_for('inventario', tab='revision', estacion=estacion) }}">Revisión a mitad</a>
+  </div>
+  {% if tab == 'pedido' and pedido %}<a class="btn btn-primary" href="{{ url_for('pedido_csv', estacion=estacion) }}">{{ icon('download', 16) }}<span>Descargar pedido (CSV)</span></a>{% endif %}
+</div>
+{% if tab == 'pedido' %}
+  <div class="metric-grid three">
+    {{ m.metrica("Ingredientes a pedir", pedido|length, "Un solo pedido para la estación") }}
+    {{ m.metrica("Semanas cubiertas", pedido[0].semanas if pedido else "—", "Completa = 12 semanas") }}
+    {{ m.metrica("Estado de la estación", "Completa" if pedido and pedido[0].completa else "Parcial", "Incluye 10% de margen de seguridad") }}
+  </div>
+  <section class="card">{{ m.titulo("Pedido sugerido por ingrediente", estacion) }}
+    <div class="table-wrap"><table>
+      <thead><tr><th>Ingrediente</th><th>Por semana (aprox.)</th><th>Total estación</th><th>Estado</th></tr></thead>
+      <tbody>{% for i in pedido %}<tr><td>{{ i.ingrediente }}</td><td>{{ i.semanal }}</td><td>{{ i.total }}</td><td>{{ m.insignia("Completa" if i.completa else "Parcial") }}</td></tr>
+      {% else %}<tr><td colspan="4">Sin pedido para esta estación.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+{% else %}
+  <div class="alert coverage-alert"><div class="alert-icon">{{ icon('box') }}</div><div><b>Revisión de inventario a mitad de estación</b><span>Compara lo que queda en stock con lo que se prevé consumir el resto de la estación. Si no cargaste tu inventario real en el notebook (<code>STOCK_ACTUAL</code>), el stock mostrado es de ejemplo.</span></div></div>
+  <section class="card">{{ m.titulo("Qué falta pedir") }}
+    <div class="table-wrap"><table>
+      <thead><tr><th>Ingrediente</th><th>Necesidad restante</th><th>Stock actual</th><th>Faltante</th><th>Estado</th></tr></thead>
+      <tbody>{% for r in revision %}<tr><td>{{ r.ingrediente }}</td><td>{{ r.necesidad_restante|num }}</td><td>{{ r.stock_actual|num }}</td><td>{{ r.faltante|num }}</td><td>{{ m.insignia(r.estado) }}</td></tr>
+      {% else %}<tr><td colspan="5">Sin revisión guardada todavía.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+{% endif %}
+{% endblock %}

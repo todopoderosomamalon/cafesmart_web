@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% import "_macros.html" as m %}
+{% block title %}Menú sugerido{% endblock %}
+{% block content %}
+{% call m.cabecera("Menú sugerido", "Combos según las ventas previstas") %}
+<form class="header-controls" method="get">
+  <div class="pills period-pills"><a class="{{ 'active' if tipo == 'mes' }}" href="{{ url_for('menu', p='mes') }}">Por mes</a><a class="{{ 'active' if tipo == 'semana' }}" href="{{ url_for('menu', p='semana') }}">Por semana</a></div>
+  <input type="hidden" name="p" value="{{ tipo }}">
+  <div class="select-shell"><span>Periodo</span><select name="sel" onchange="this.form.submit()">{% for p in lista %}<option value="{{ p.key }}" {{ 'selected' if p.key == actual.key }}>{{ p.largo }}</option>{% endfor %}</select></div>
+</form>
+{% endcall %}
+<div class="combo-grid">
+  {% for c in combos %}
+  <section class="card combo-card"><div class="combo-accent"></div><span class="combo-label">{{ c.combo }} · clima {{ c.clima_esperado }}</span><h2>{{ c.nombre }}</h2>
+    <div class="combo-units"><strong>{{ c.u_bebida|num }}</strong><span>{{ c.bebida }} previstas · {{ c.u_comida|num }} {{ c.comida }}</span></div>
+    <div class="combo-price"><strong>{{ c.precio_combo|dinero }}</strong><small>{{ c.precio_normal|dinero }} precio normal</small></div>
+    <button type="button" class="btn btn-primary" data-action="promo">{{ icon('check', 16) }}<span>Usar en promoción</span></button>
+  </section>
+  {% else %}<section class="card"><p class="note" style="margin:0">No hay combos guardados para este periodo.</p></section>{% endfor %}
+</div>
+<section class="card">{{ m.titulo("Productos con más venta prevista", actual.largo ~ " · top 10") }}
+  <div class="table-wrap"><table>
+    <thead><tr><th>Puesto</th><th>Producto</th><th>Categoría</th><th>Unidades</th><th>Tendencia</th></tr></thead>
+    <tbody>{% for p in prods %}<tr><td>{{ loop.index }}</td><td>{{ p.producto }}</td><td>{{ p.categoria }}</td><td>{{ p.unidades|num }}</td><td>{{ m.insignia(p.tendencia) }}</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+{% endblock %}

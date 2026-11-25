@@ -1,0 +1,39 @@
+{% macro cabecera(titulo, eyebrow="Panel de predicción") -%}
+<header class="page-header"><div><div class="eyebrow">{{ eyebrow }}</div><h1>{{ titulo }}</h1></div>{% if caller %}{{ caller() }}{% endif %}</header>
+{%- endmacro %}
+
+{% macro titulo(texto, detalle="") -%}
+<div class="card-heading"><h2>{{ texto }}</h2>{% if detalle %}<span>{{ detalle }}</span>{% endif %}</div>
+{%- endmacro %}
+
+{% macro metrica(etiqueta, valor, nota="") -%}
+<section class="card metric"><span class="metric-label">{{ etiqueta }}</span><strong>{{ valor }}</strong>{% if nota %}<small>{{ nota }}</small>{% endif %}</section>
+{%- endmacro %}
+
+{% macro insignia(texto, tono_color=none) -%}
+<span class="badge badge-{{ tono_color or tono(texto) }}">{{ texto }}</span>
+{%- endmacro %}
+
+{% macro pastillas(tipo, endpoint) -%}
+<div class="pills period-pills">{% for k, n in TIPOS.items() %}<a class="{{ 'active' if k == tipo }}" href="{{ url_for(endpoint, p=k) }}">{{ n }}</a>{% endfor %}</div>
+{%- endmacro %}
+
+{% macro barras(lista, elegido=none) -%}
+<div class="bar-chart">
+  {% for p in lista %}
+  <a class="bar-group" href="{{ p.href }}" title="{{ p.label }}">
+    <div class="bars"><div class="bar {{ 'bar-strong' if p.key == elegido else 'bar-soft' }}" style="height:{{ p.alto }}%"><span class="chart-tooltip">{{ p.unidades|num }}</span></div></div>
+    <span>{{ p.label }}{{ '*' if p.parcial }}</span>
+  </a>
+  {% endfor %}
+</div>
+{% if lista|selectattr('parcial')|list %}<p class="note" style="margin-top:12px">* Estación con menos de 12 semanas pronosticadas: su total es parcial y no es comparable con las completas.</p>{% endif %}
+{%- endmacro %}
+
+{% macro tabla_productos(prods, titulo_unidades="Unidades previstas") -%}
+<div class="table-wrap"><table>
+  <thead><tr><th class="sortable">Producto</th><th class="sortable">Categoría</th><th class="sortable">{{ titulo_unidades }}</th><th>Tendencia</th></tr></thead>
+  <tbody>{% for p in prods %}<tr><td>{{ p.producto }}</td><td>{{ p.categoria }}</td><td data-v="{{ p.unidades }}">{{ p.unidades|num }}</td><td>{{ insignia(p.tendencia) }}</td></tr>{% endfor %}</tbody>
+</table></div>
+<p class="note" style="margin:12px 0 0">Tendencia: pronóstico semanal frente al promedio de las últimas 8 semanas reales (±5% = estable).</p>
+{%- endmacro %}

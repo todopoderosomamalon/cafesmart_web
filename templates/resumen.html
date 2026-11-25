@@ -1,0 +1,27 @@
+{% extends "base.html" %}{% import "_macros.html" as m %}
+{% block title %}Resumen{% endblock %}
+{% block content %}
+{% call m.cabecera("Predicción por temporada") %}<div class="header-controls">{{ m.pastillas(tipo, 'resumen') }}</div>{% endcall %}
+<div class="metric-grid">
+  {{ m.metrica("Unidades previstas", actual.unidades|num, actual.largo ~ (" · parcial" if actual.parcial else "")) }}
+  {{ m.metrica("Producto estrella", prods[0].producto if prods else "—", "Mayor demanda prevista") }}
+  {{ m.metrica("Combos sugeridos", combos|length, "Listos para promoción") }}
+  {{ m.metrica("Mejora vs. promedio simple", ("%.0f%%"|format(modelos.mejora)) if modelos else "—", ("Mejor modelo: " ~ modelos.mejor) if modelos else "Sin validación") }}
+</div>
+<div class="two-columns">
+  <section class="card">{{ m.titulo("Ventas previstas", "Unidades · haz clic en una barra") }}{{ m.barras(barras, actual.key) }}</section>
+  <section class="card">{{ m.titulo("Menú sugerido · " ~ actual.largo) }}
+    <div class="recommendations">
+      {% for c in combos %}<div class="rec cream"><span>{{ c.combo }}</span><b>{{ c.nombre }}</b></div>{% else %}<p class="note">Sin combos para este periodo.</p>{% endfor %}
+      <a class="btn btn-dark" href="{{ url_for('menu') }}">{{ icon('arrow', 16) }}<span>Ver menú completo</span></a>
+    </div>
+  </section>
+</div>
+<section class="card">{{ m.titulo("Ingredientes estimados (apoyo)", ("Plan para " ~ estacion) if estacion else "") }}
+  <div class="table-wrap"><table>
+    <thead><tr><th>Ingrediente</th><th>Cantidad semanal</th><th>Total estación</th><th>Estado</th></tr></thead>
+    <tbody>{% for i in ingredientes %}<tr><td>{{ i.ingrediente }}</td><td>{{ i.semanal }}</td><td>{{ i.total }}</td><td>{{ m.insignia("Completa" if i.completa else "Parcial") }}</td></tr>
+    {% else %}<tr><td colspan="4">Sin pedido calculado para este periodo.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+{% endblock %}

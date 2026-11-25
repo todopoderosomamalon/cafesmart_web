@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% import "_macros.html" as m %}
+{% block title %}Tiendas{% endblock %}
+{% block content %}
+{% call m.cabecera("Tiendas", "") %}{% endcall %}
+<div class="branch-grid">
+  <section class="card branch-card">
+    <div class="branch-top"><div class="branch-symbol">{{ icon('store') }}</div><div><h2>Todas las sucursales</h2><span>Pronóstico combinado</span></div></div>
+    <div class="branch-stats">
+      <div><span>Unidades próximas 4 semanas</span><b>{{ unidades|num }}</b></div>
+      <div><span>Ingredientes a pedir</span><b>{{ n_ingredientes }}</b></div>
+      <div><span>Producto estrella</span><b>{{ estrella }}</b></div>
+      <div><span>Semanas pronosticadas</span><b>{{ semanas }}</b></div>
+    </div>
+    <a class="btn btn-dark" href="{{ url_for('resumen') }}">{{ icon('arrow', 16) }}<span>Ver detalle</span></a>
+  </section>
+</div>
+<div class="location-note">{{ icon('store') }}<span>Hoy el modelo se calcula con todas las sucursales juntas, y las tablas de Supabase no guardan la tienda. Para ver cada una por separado, corre el notebook por sucursal y agrega una columna <code>sucursal</code> a las tablas.</span></div>
+{% endblock %}
